@@ -27,7 +27,7 @@ export default function DesktopSetup({ onStart }) {
   const [difficulty, setDifficulty] = useState('Medium')
   const [language, setLanguage] = useState('tagalog')
   const [error, setError] = useState('')
-  const { setTopic: storeTopic, setMode, setDifficulty: storeDiff, setLanguage: storeLang, setSystemPrompt, setLoading } = useDebateStore()
+  const { setTopic: storeTopic, setMode, setDifficulty: storeDiff, setLanguage: storeLang, setSystemPrompt, isLoading, setLoading } = useDebateStore()
   const selected = modes.find(m => m.id === selectedMode)
 
   const handleStart = async () => {
@@ -133,12 +133,12 @@ export default function DesktopSetup({ onStart }) {
             ))}
           </div>
 
-          <button onClick={handleStart} disabled={!topic.trim() || loading}
+          <button onClick={handleStart} disabled={!topic.trim() || isLoading}
             style={{
               width: '100%', background: !topic.trim() ? '#1a1f35' : ACCENT, border: 'none', borderRadius: 10,
               padding: 13, fontSize: 14, fontWeight: 600, color: !topic.trim() ? '#3d4560' : '#fff',
               cursor: !topic.trim() ? 'not-allowed' : 'pointer', transition: 'all 0.2s', marginTop: 'auto',
-              opacity: loading ? 0.6 : 1
+              opacity: isLoading ? 0.6 : 1
             }}
             onMouseEnter={e => { if (topic.trim()) { e.target.style.background = '#4a3fc7'; e.target.style.transform = 'translateY(-1px)' }}}
             onMouseLeave={e => { if (topic.trim()) { e.target.style.background = ACCENT; e.target.style.transform = 'none' }}}
