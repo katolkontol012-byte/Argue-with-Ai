@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import useDebateStore from '../store/debateStore'
+import useMediaQuery from '../hooks/useMediaQuery'
 
 const modes = [
   { id: 'friendly', name: 'Friendly', icon: '😊', desc: 'Supportive & casual', color: '#4ade80' },
@@ -22,6 +23,7 @@ const TEXT = '#e2e8f0'
 const MUTED = '#6b7280'
 
 export default function DesktopSetup({ onStart }) {
+  const isMobile = useMediaQuery('(max-width: 767px)')
   const [topic, setTopic] = useState('')
   const [selectedMode, setSelectedMode] = useState('friendly')
   const [difficulty, setDifficulty] = useState('Medium')
@@ -60,46 +62,60 @@ export default function DesktopSetup({ onStart }) {
     }
   }
 
+  const p = isMobile ? 16 : 32
+  const cP = isMobile ? 16 : 36
+  const lS = isMobile ? 32 : 38
+  const lF = isMobile ? 16 : 18
+  const tS = isMobile ? 17 : 20
+  const sF = isMobile ? 10 : 11
+  const lSF = isMobile ? 9 : 10
+  const iF = isMobile ? 14 : 13
+  const bP = isMobile ? 10 : 13
+  const bF = isMobile ? 13 : 14
+  const mG = isMobile ? 16 : 28
+  const cG = isMobile ? 6 : 8
+  const mB = isMobile ? 14 : 20
+  const pG = isMobile ? 16 : 28
+
   return (
     <div style={{
-      minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
-      background: BG, padding: 32,
+      minHeight: '100vh', display: 'flex', alignItems: isMobile ? 'stretch' : 'center', justifyContent: 'center',
+      background: BG, padding: p,
       fontFamily: "'Inter', system-ui, sans-serif"
     }}>
       <div style={{
-        width: '100%', maxWidth: 960, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0,
-        background: SURFACE, border: `0.5px solid ${BORDER}`, borderRadius: 18, overflow: 'hidden'
+        width: '100%', maxWidth: 960, display: 'flex', flexDirection: 'column',
+        background: SURFACE, border: `0.5px solid ${BORDER}`, borderRadius: isMobile ? 14 : 18, overflow: 'hidden'
       }}>
-        {/* LEFT COL */}
-        <div style={{ padding: '36px 32px', borderRight: `0.5px solid ${BORDER}`, display: 'flex', flexDirection: 'column' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 28 }}>
+        <div style={{ padding: `${cP}px ${isMobile ? 16 : 32}px`, display: 'flex', flexDirection: 'column' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: mG }}>
             <div style={{
-              width: 38, height: 38, background: `linear-gradient(135deg, ${ACCENT}, ${ACCENT_LIGHT})`,
-              borderRadius: 11, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18
+              width: lS, height: lS, background: `linear-gradient(135deg, ${ACCENT}, ${ACCENT_LIGHT})`,
+              borderRadius: 11, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: lF
             }}>🧠</div>
             <div>
-              <div style={{ fontSize: 20, fontWeight: 800, color: '#fff', letterSpacing: '-0.3px' }}>
+              <div style={{ fontSize: tS, fontWeight: 800, color: '#fff', letterSpacing: '-0.3px' }}>
                 Argue <span style={{ color: ACCENT_LIGHT }}>With Me</span>
               </div>
-              <div style={{ fontSize: 11, color: MUTED }}>Pick a topic. Choose your opponent. Win.</div>
+              <div style={{ fontSize: sF, color: MUTED }}>Pick a topic. Choose your opponent. Win.</div>
             </div>
           </div>
 
-          <div style={{ fontSize: 10, color: MUTED, letterSpacing: '0.08em', textTransform: 'uppercase', fontWeight: 500, marginBottom: 6 }}>Debate topic</div>
+          <div style={{ fontSize: lSF, color: MUTED, letterSpacing: '0.08em', textTransform: 'uppercase', fontWeight: 500, marginBottom: 6 }}>Debate topic</div>
           <input value={topic} onChange={e => setTopic(e.target.value)} placeholder="Enter any topic to debate..."
             style={{
-              width: '100%', background: BG, border: `0.5px solid ${BORDER}`, borderRadius: 9, padding: '11px 14px',
-              fontSize: 13, color: TEXT, outline: 'none', transition: 'border-color 0.2s', marginBottom: 8
+              width: '100%', background: BG, border: `0.5px solid ${BORDER}`, borderRadius: 9, padding: `${isMobile ? 12 : 11}px 14px`,
+              fontSize: iF, color: TEXT, outline: 'none', transition: 'border-color 0.2s', marginBottom: 8
             }}
             onFocus={e => e.target.style.borderColor = ACCENT}
             onBlur={e => e.target.style.borderColor = BORDER}
           />
-          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 20 }}>
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: mB }}>
             {SUGGESTED_TOPICS.map(t => (
               <button key={t} onClick={() => setTopic(t)}
                 style={{
-                  background: BG, border: `0.5px solid ${BORDER}`, borderRadius: 20, padding: '4px 11px',
-                  fontSize: 11, color: MUTED, cursor: 'pointer', transition: 'all 0.15s'
+                  background: BG, border: `0.5px solid ${BORDER}`, borderRadius: 20, padding: isMobile ? '6px 12px' : '4px 11px',
+                  fontSize: sF, color: MUTED, cursor: 'pointer', transition: 'all 0.15s'
                 }}
                 onMouseEnter={e => { e.target.style.borderColor = ACCENT; e.target.style.color = ACCENT_LIGHT }}
                 onMouseLeave={e => { e.target.style.borderColor = BORDER; e.target.style.color = MUTED }}
@@ -107,26 +123,26 @@ export default function DesktopSetup({ onStart }) {
             ))}
           </div>
 
-          <div style={{ fontSize: 10, color: MUTED, letterSpacing: '0.08em', textTransform: 'uppercase', fontWeight: 500, marginBottom: 6 }}>Difficulty</div>
-          <div style={{ display: 'flex', gap: 6, marginBottom: 20 }}>
+          <div style={{ fontSize: lSF, color: MUTED, letterSpacing: '0.08em', textTransform: 'uppercase', fontWeight: 500, marginBottom: 6 }}>Difficulty</div>
+          <div style={{ display: 'flex', gap: 6, marginBottom: mB }}>
             {DIFFICULTIES.map(d => (
               <button key={d} onClick={() => setDifficulty(d)}
                 style={{
                   flex: 1, background: difficulty === d ? '#1e1a3d' : BG, border: `0.5px solid ${difficulty === d ? ACCENT : BORDER}`,
-                  borderRadius: 8, padding: '8px 0', fontSize: 12, fontWeight: 500,
+                  borderRadius: 8, padding: isMobile ? '10px 0' : '8px 0', fontSize: sF, fontWeight: 500,
                   color: difficulty === d ? '#a89cf7' : MUTED, cursor: 'pointer', transition: 'all 0.15s'
                 }}
               >{d}</button>
             ))}
           </div>
 
-          <div style={{ fontSize: 10, color: MUTED, letterSpacing: '0.08em', textTransform: 'uppercase', fontWeight: 500, marginBottom: 6 }}>Language</div>
-          <div style={{ display: 'flex', gap: 6, marginBottom: 28 }}>
+          <div style={{ fontSize: lSF, color: MUTED, letterSpacing: '0.08em', textTransform: 'uppercase', fontWeight: 500, marginBottom: 6 }}>Language</div>
+          <div style={{ display: 'flex', gap: 6, marginBottom: pG }}>
             {LANGUAGES.map(l => (
               <button key={l} onClick={() => setLanguage(l)}
                 style={{
                   flex: 1, background: language === l ? '#1e1a3d' : BG, border: `0.5px solid ${language === l ? ACCENT : BORDER}`,
-                  borderRadius: 8, padding: '8px 0', fontSize: 12, fontWeight: 500,
+                  borderRadius: 8, padding: isMobile ? '10px 0' : '8px 0', fontSize: sF, fontWeight: 500,
                   color: language === l ? '#a89cf7' : MUTED, cursor: 'pointer', textTransform: 'capitalize', transition: 'all 0.15s'
                 }}
               >{l === 'tagalog' ? 'Tagalog' : 'English'}</button>
@@ -136,9 +152,9 @@ export default function DesktopSetup({ onStart }) {
           <button onClick={handleStart} disabled={!topic.trim() || isLoading}
             style={{
               width: '100%', background: !topic.trim() ? '#1a1f35' : ACCENT, border: 'none', borderRadius: 10,
-              padding: 13, fontSize: 14, fontWeight: 600, color: !topic.trim() ? '#3d4560' : '#fff',
-              cursor: !topic.trim() ? 'not-allowed' : 'pointer', transition: 'all 0.2s', marginTop: 'auto',
-              opacity: isLoading ? 0.6 : 1
+              padding: bP, fontSize: bF, fontWeight: 600, color: !topic.trim() ? '#3d4560' : '#fff',
+              cursor: !topic.trim() ? 'not-allowed' : 'pointer', transition: 'all 0.2s',
+              opacity: isLoading ? 0.6 : 1, marginBottom: isMobile ? 0 : 0
             }}
             onMouseEnter={e => { if (topic.trim()) { e.target.style.background = '#4a3fc7'; e.target.style.transform = 'translateY(-1px)' }}}
             onMouseLeave={e => { if (topic.trim()) { e.target.style.background = ACCENT; e.target.style.transform = 'none' }}}
@@ -150,35 +166,37 @@ export default function DesktopSetup({ onStart }) {
           )}
         </div>
 
-        {/* RIGHT COL */}
-        <div style={{ padding: '36px 32px', display: 'flex', flexDirection: 'column' }}>
-          <div style={{ fontSize: 13, fontWeight: 600, color: TEXT, marginBottom: 14 }}>Choose your opponent</div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 16 }}>
+        <div style={{
+          padding: isMobile ? '0 16px 20px' : `${cP}px ${isMobile ? 16 : 32}px`,
+          display: 'flex', flexDirection: 'column'
+        }}>
+          <div style={{ fontSize: isMobile ? 12 : 13, fontWeight: 600, color: TEXT, marginBottom: isMobile ? 10 : 14 }}>Choose your opponent</div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: cG, marginBottom: isMobile ? 12 : 16 }}>
             {modes.map(m => (
               <button key={m.id} onClick={() => setSelectedMode(m.id)}
                 style={{
                   background: selectedMode === m.id ? '#1e1a3d' : BG, border: `0.5px solid ${selectedMode === m.id ? ACCENT : BORDER}`,
-                  borderRadius: 10, padding: '12px 8px', textAlign: 'center', cursor: 'pointer', transition: 'all 0.15s'
+                  borderRadius: 10, padding: isMobile ? '8px 4px' : '12px 8px', textAlign: 'center', cursor: 'pointer', transition: 'all 0.15s'
                 }}
                 onMouseEnter={e => { if (selectedMode !== m.id) e.target.style.borderColor = '#2d3550' }}
                 onMouseLeave={e => { if (selectedMode !== m.id) e.target.style.borderColor = BORDER }}
               >
-                <div style={{ fontSize: 20, marginBottom: 4 }}>{m.icon}</div>
-                <div style={{ fontSize: 11, fontWeight: 600, color: selectedMode === m.id ? '#a89cf7' : MUTED }}>{m.name}</div>
-                <div style={{ fontSize: 10, color: '#3d4560', marginTop: 1 }}>{m.desc}</div>
+                <div style={{ fontSize: isMobile ? 16 : 20, marginBottom: isMobile ? 2 : 4 }}>{m.icon}</div>
+                <div style={{ fontSize: isMobile ? 10 : 11, fontWeight: 600, color: selectedMode === m.id ? '#a89cf7' : MUTED }}>{m.name}</div>
+                <div style={{ fontSize: isMobile ? 9 : 10, color: '#3d4560', marginTop: 1 }}>{m.desc}</div>
               </button>
             ))}
           </div>
 
           <div style={{
-            background: BG, border: `0.5px solid ${BORDER}`, borderRadius: 10, padding: '12px 14px', marginTop: 'auto'
+            background: BG, border: `0.5px solid ${BORDER}`, borderRadius: 10, padding: isMobile ? '10px 12px' : '12px 14px'
           }}>
-            <div style={{ fontSize: 10, color: MUTED, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 6 }}>Selected config</div>
-            <div style={{ fontSize: 13, fontWeight: 600, color: '#a89cf7' }}>
+            <div style={{ fontSize: lSF, color: MUTED, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 6 }}>Selected config</div>
+            <div style={{ fontSize: isMobile ? 12 : 13, fontWeight: 600, color: '#a89cf7' }}>
               {selected?.icon} {selected?.name} · {difficulty} · {language === 'tagalog' ? 'Tagalog' : 'English'}
             </div>
-            <div style={{ fontSize: 11, color: MUTED, marginTop: 3 }}>{selected?.desc}</div>
-            {topic && <div style={{ fontSize: 11, color: '#3d4560', marginTop: 6, fontStyle: 'italic' }}>Topic: "{topic}"</div>}
+            <div style={{ fontSize: isMobile ? 10 : 11, color: MUTED, marginTop: 3 }}>{selected?.desc}</div>
+            {topic && <div style={{ fontSize: isMobile ? 10 : 11, color: '#3d4560', marginTop: 6, fontStyle: 'italic' }}>Topic: "{topic}"</div>}
           </div>
         </div>
       </div>

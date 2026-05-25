@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import useDebateStore from '../store/debateStore'
+import useMediaQuery from '../hooks/useMediaQuery'
 
 const TOTAL_ROUNDS = 5
 const ACCENT = '#5b50d6'
@@ -45,6 +46,7 @@ function ScoreBar({ label, value }) {
 }
 
 export default function DesktopArena({ onBack }) {
+  const isMobile = useMediaQuery('(max-width: 767px)')
   const [message, setMessage] = useState('')
   const [toast, setToast] = useState(null)
   const [hint, setHint] = useState(null)
@@ -248,8 +250,8 @@ export default function DesktopArena({ onBack }) {
         fontFamily: "'Inter', system-ui, sans-serif"
       }}>
         <div style={{
-          background: SURFACE, border: `0.5px solid ${BORDER}`, borderRadius: 18, padding: 36,
-          width: '100%', maxWidth: 520, textAlign: 'center'
+          background: SURFACE, border: `0.5px solid ${BORDER}`, borderRadius: isMobile ? 14 : 18, padding: isMobile ? 20 : 36,
+          width: '100%', maxWidth: isMobile ? '92%' : 520, textAlign: 'center'
         }}>
           <div style={{ fontSize: 44, marginBottom: 8 }}>{avgScore >= 70 ? '🏆' : avgScore >= 50 ? '⚔️' : '📚'}</div>
           <div style={{ fontSize: 26, fontWeight: 800, color: '#fff', marginBottom: 4 }}>Debate Over</div>
@@ -284,69 +286,101 @@ export default function DesktopArena({ onBack }) {
       height: '100vh', display: 'flex', fontFamily: "'Inter', system-ui, sans-serif",
       background: BG, color: TEXT
     }}>
-      <div style={{ flex: 1, display: 'grid', gridTemplateColumns: '280px 1fr', overflow: 'hidden' }}>
-        {/* SIDEBAR */}
-        <div style={{
-          background: SURFACE, borderRight: `0.5px solid ${BORDER}`, display: 'flex',
-          flexDirection: 'column', gap: 12, padding: 16, overflowY: 'auto'
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-            <button onClick={handleNewDebate} style={{
-              background: 'none', border: 'none', color: MUTED, fontSize: 18, padding: 0, cursor: 'pointer', lineHeight: 1
-            }}>←</button>
-            <div>
-              <div style={{ fontSize: 12, fontWeight: 600, color: TEXT, lineHeight: 1.3 }}>{topic}</div>
-              <div style={{ fontSize: 10, color: meta.color }}>{meta.icon} {meta.name}</div>
-            </div>
-          </div>
-
+      <div style={{
+        flex: 1, display: isMobile ? 'flex' : 'grid',
+        gridTemplateColumns: isMobile ? undefined : '280px 1fr',
+        flexDirection: 'column', overflow: 'hidden'
+      }}>
+        {/* SIDEBAR - desktop only */}
+        {!isMobile && (
           <div style={{
-            background: CARD, border: `0.5px solid ${BORDER}`, borderRadius: 10, padding: '12px 14px', textAlign: 'center'
+            background: SURFACE, borderRight: `0.5px solid ${BORDER}`, display: 'flex',
+            flexDirection: 'column', gap: 12, padding: 16, overflowY: 'auto'
           }}>
-            <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 32, fontWeight: 800, color: '#a89cf7', lineHeight: 1 }}>
-              {round}<span style={{ fontSize: 18, color: '#3d4560' }}>/{TOTAL_ROUNDS}</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+              <button onClick={handleNewDebate} style={{
+                background: 'none', border: 'none', color: MUTED, fontSize: 18, padding: 0, cursor: 'pointer', lineHeight: 1
+              }}>←</button>
+              <div>
+                <div style={{ fontSize: 12, fontWeight: 600, color: TEXT, lineHeight: 1.3 }}>{topic}</div>
+                <div style={{ fontSize: 10, color: meta.color }}>{meta.icon} {meta.name}</div>
+              </div>
             </div>
-            <div style={{ fontSize: 10, color: MUTED, marginTop: 2 }}>rounds completed</div>
-          </div>
 
-          <div style={{ background: CARD, border: `0.5px solid ${BORDER}`, borderRadius: 10, padding: '12px 14px' }}>
-            <div style={{ fontSize: 9, color: MUTED, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 8, fontWeight: 500 }}>Your argument scores</div>
-            <ScoreBar label="Logic" value={analysis.logic} />
-            <ScoreBar label="Evidence" value={analysis.evidence} />
-            <ScoreBar label="Persuasion" value={analysis.persuasion} />
-            <ScoreBar label="Bias" value={analysis.bias} />
-          </div>
-
-          {toast && (
             <div style={{
-              background: '#0d1a2d', border: '0.5px solid #1e3a5f', borderRadius: 10, padding: '12px 14px', animation: 'slideIn 0.25s ease'
+              background: CARD, border: `0.5px solid ${BORDER}`, borderRadius: 10, padding: '12px 14px', textAlign: 'center'
             }}>
-              <div style={{ fontSize: 9, color: '#60a5fa', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 8, fontWeight: 500 }}>Fallacy detected</div>
-              <div style={{ fontSize: 12, fontWeight: 600, color: '#60a5fa', marginBottom: 4 }}>{toast}</div>
-              <div style={{ fontSize: 11, color: '#3d6090', lineHeight: 1.5 }}>Try backing your claim with evidence instead of this reasoning pattern.</div>
+              <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 32, fontWeight: 800, color: '#a89cf7', lineHeight: 1 }}>
+                {round}<span style={{ fontSize: 18, color: '#3d4560' }}>/{TOTAL_ROUNDS}</span>
+              </div>
+              <div style={{ fontSize: 10, color: MUTED, marginTop: 2 }}>rounds completed</div>
             </div>
-          )}
-        </div>
+
+            <div style={{ background: CARD, border: `0.5px solid ${BORDER}`, borderRadius: 10, padding: '12px 14px' }}>
+              <div style={{ fontSize: 9, color: MUTED, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 8, fontWeight: 500 }}>Your argument scores</div>
+              <ScoreBar label="Logic" value={analysis.logic} />
+              <ScoreBar label="Evidence" value={analysis.evidence} />
+              <ScoreBar label="Persuasion" value={analysis.persuasion} />
+              <ScoreBar label="Bias" value={analysis.bias} />
+            </div>
+
+            {toast && (
+              <div style={{
+                background: '#0d1a2d', border: '0.5px solid #1e3a5f', borderRadius: 10, padding: '12px 14px', animation: 'slideIn 0.25s ease'
+              }}>
+                <div style={{ fontSize: 9, color: '#60a5fa', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 8, fontWeight: 500 }}>Fallacy detected</div>
+                <div style={{ fontSize: 12, fontWeight: 600, color: '#60a5fa', marginBottom: 4 }}>{toast}</div>
+                <div style={{ fontSize: 11, color: '#3d6090', lineHeight: 1.5 }}>Try backing your claim with evidence instead of this reasoning pattern.</div>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* CHAT */}
-        <div style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-          <div style={{
-            padding: '14px 20px', borderBottom: `0.5px solid ${BORDER}`, display: 'flex',
-            alignItems: 'center', justifyContent: 'space-between', background: SURFACE, flexShrink: 0
-          }}>
-            <div>
-              <div style={{ fontSize: 13, fontWeight: 600, color: TEXT, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{topic}</div>
-              <div style={{ fontSize: 11, color: MUTED, marginTop: 1 }}>Present your argument to continue the debate</div>
-            </div>
+        <div style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', flex: 1 }}>
+          {/* HEADER */}
+          {isMobile ? (
             <div style={{
-              background: '#0d1a2d', border: `0.5px solid ${meta.color}33`, borderRadius: 20,
-              padding: '4px 12px', fontSize: 11, color: meta.color
+              padding: '10px 12px', borderBottom: `0.5px solid ${BORDER}`,
+              display: 'flex', alignItems: 'center', gap: 8,
+              background: SURFACE, flexShrink: 0
             }}>
-              {meta.icon} {meta.name} Mode
+              <button onClick={handleNewDebate} style={{
+                background: 'none', border: 'none', color: MUTED, fontSize: 18, padding: '0 4px', cursor: 'pointer', lineHeight: 1, flexShrink: 0
+              }}>←</button>
+              <div style={{ flex: 1, overflow: 'hidden' }}>
+                <div style={{ fontSize: 12, fontWeight: 600, color: TEXT, lineHeight: 1.3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{topic}</div>
+                <div style={{ fontSize: 10, color: MUTED, lineHeight: 1.3 }}>Round {round}/{TOTAL_ROUNDS}</div>
+              </div>
+              <div style={{
+                background: '#0d1a2d', border: `0.5px solid ${meta.color}33`, borderRadius: 16,
+                padding: '2px 10px', fontSize: 11, color: meta.color, whiteSpace: 'nowrap', flexShrink: 0
+              }}>{meta.icon} {meta.name}</div>
+              <div style={{
+                background: CARD, border: `0.5px solid ${BORDER}`, borderRadius: 10,
+                padding: '4px 10px', fontSize: 13, fontWeight: 700, color: '#a89cf7', lineHeight: 1, flexShrink: 0
+              }}>{round}<span style={{ fontSize: 11, color: '#3d4560' }}>/{TOTAL_ROUNDS}</span></div>
             </div>
-          </div>
+          ) : (
+            <div style={{
+              padding: '14px 20px', borderBottom: `0.5px solid ${BORDER}`, display: 'flex',
+              alignItems: 'center', justifyContent: 'space-between', background: SURFACE, flexShrink: 0
+            }}>
+              <div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: TEXT, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{topic}</div>
+                <div style={{ fontSize: 11, color: MUTED, marginTop: 1 }}>Present your argument to continue the debate</div>
+              </div>
+              <div style={{
+                background: '#0d1a2d', border: `0.5px solid ${meta.color}33`, borderRadius: 20,
+                padding: '4px 12px', fontSize: 11, color: meta.color
+              }}>
+                {meta.icon} {meta.name} Mode
+              </div>
+            </div>
+          )}
 
-          <div style={{ flex: 1, overflowY: 'auto', padding: 20, display: 'flex', flexDirection: 'column', gap: 10 }} ref={messagesEndRef}>
+          {/* MESSAGES */}
+          <div style={{ flex: 1, overflowY: 'auto', padding: isMobile ? 12 : 20, display: 'flex', flexDirection: 'column', gap: isMobile ? 8 : 10 }}>
             {conversationHistory.length === 0 && !isLoading && (
               <div style={{ textAlign: 'center', padding: '40px 0', color: MUTED, fontSize: 13 }}>
                 Ready to spar? AI is preparing...
@@ -354,16 +388,19 @@ export default function DesktopArena({ onBack }) {
             )}
             {conversationHistory.map((msg, i) => (
               <div key={i} style={{
-                display: 'flex', gap: 8, animation: 'fadeUp 0.25s ease',
+                display: 'flex', gap: isMobile ? 6 : 8, animation: 'fadeUp 0.25s ease',
                 flexDirection: msg.role === 'user' ? 'row-reverse' : 'row'
               }}>
                 <div style={{
-                  width: 30, height: 30, borderRadius: 8, background: msg.role === 'user' ? '#1e1a3d' : CARD,
+                  width: isMobile ? 26 : 30, height: isMobile ? 26 : 30, borderRadius: 8,
+                  background: msg.role === 'user' ? '#1e1a3d' : CARD,
                   border: `0.5px solid ${msg.role === 'user' ? '#3d3480' : BORDER}`,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15, flexShrink: 0, alignSelf: 'flex-end'
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: isMobile ? 13 : 15, flexShrink: 0, alignSelf: 'flex-end'
                 }}>{msg.role === 'user' ? '👤' : meta.icon}</div>
                 <div style={{
-                  maxWidth: '68%', padding: '10px 14px', fontSize: 13, lineHeight: 1.65, color: TEXT,
+                  maxWidth: isMobile ? '85%' : '68%',
+                  padding: isMobile ? '8px 12px' : '10px 14px',
+                  fontSize: isMobile ? 13 : 13, lineHeight: 1.65, color: TEXT,
                   background: msg.role === 'user' ? '#1e1a3d' : CARD,
                   border: `0.5px solid ${msg.role === 'user' ? '#3d3480' : BORDER}`,
                   borderRadius: msg.role === 'user' ? '12px 3px 12px 12px' : '3px 12px 12px 12px'
@@ -371,11 +408,11 @@ export default function DesktopArena({ onBack }) {
               </div>
             ))}
             {isLoading && (
-              <div style={{ display: 'flex', gap: 8 }}>
+              <div style={{ display: 'flex', gap: isMobile ? 6 : 8 }}>
                 <div style={{
-                  width: 30, height: 30, borderRadius: 8, background: CARD,
+                  width: isMobile ? 26 : 30, height: isMobile ? 26 : 30, borderRadius: 8, background: CARD,
                   border: `0.5px solid ${BORDER}`, display: 'flex', alignItems: 'center',
-                  justifyContent: 'center', fontSize: 15, flexShrink: 0
+                  justifyContent: 'center', fontSize: isMobile ? 13 : 15, flexShrink: 0
                 }}>{meta.icon}</div>
                 <div style={{
                   padding: '10px 14px', fontSize: 14, color: MUTED,
@@ -393,13 +430,15 @@ export default function DesktopArena({ onBack }) {
             )}
           </div>
 
+          {/* INPUT */}
           <div style={{
-            padding: '14px 20px', borderTop: `0.5px solid ${BORDER}`, display: 'flex', gap: 8,
+            padding: isMobile ? '10px 12px' : '14px 20px',
+            borderTop: `0.5px solid ${BORDER}`, display: 'flex', gap: isMobile ? 6 : 8,
             alignItems: 'flex-end', background: SURFACE, flexShrink: 0
           }}>
             <button onClick={getHint} disabled={hintLoading || conversationHistory.length === 0} style={{
               background: CARD, border: `0.5px solid ${BORDER}`, borderRadius: 9, padding: '0 12px',
-              height: 42, fontSize: 12, color: hintLoading || conversationHistory.length === 0 ? '#3d4560' : MUTED,
+              height: isMobile ? 44 : 42, fontSize: 12, color: hintLoading || conversationHistory.length === 0 ? '#3d4560' : MUTED,
               cursor: hintLoading || conversationHistory.length === 0 ? 'not-allowed' : 'pointer', whiteSpace: 'nowrap',
               transition: 'all 0.15s'
             }}
@@ -409,10 +448,10 @@ export default function DesktopArena({ onBack }) {
             <textarea value={message} onChange={e => setMessage(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend() }}}
               placeholder="Present your argument... (Enter to send)"
-              rows={2}
+              rows={isMobile ? 1 : 2}
               disabled={isLoading}
               style={{
-                flex: 1, background: CARD, border: `0.5px solid ${BORDER}`, borderRadius: 10, padding: '10px 14px',
+                flex: 1, background: CARD, border: `0.5px solid ${BORDER}`, borderRadius: 10, padding: isMobile ? '10px 12px' : '10px 14px',
                 fontSize: 13, color: TEXT, lineHeight: 1.5, outline: 'none', transition: 'border-color 0.2s', fontFamily: 'inherit'
               }}
               onFocus={e => e.target.style.borderColor = ACCENT}
@@ -420,7 +459,7 @@ export default function DesktopArena({ onBack }) {
             />
             <button onClick={handleSend} disabled={!message.trim() || isLoading} style={{
               background: !message.trim() || isLoading ? CARD : ACCENT, border: 'none', borderRadius: 10,
-              width: 42, height: 42, fontSize: 16, color: !message.trim() || isLoading ? '#3d4560' : '#fff',
+              width: isMobile ? 44 : 42, height: isMobile ? 44 : 42, fontSize: 16, color: !message.trim() || isLoading ? '#3d4560' : '#fff',
               cursor: !message.trim() || isLoading ? 'not-allowed' : 'pointer', flexShrink: 0,
               transition: 'background 0.2s'
             }}
@@ -428,6 +467,19 @@ export default function DesktopArena({ onBack }) {
               onMouseLeave={e => { if (message.trim() && !isLoading) e.target.style.background = ACCENT }}
             >→</button>
           </div>
+
+          {/* Mobile fallacy toast - inline in chat */}
+          {isMobile && toast && (
+            <div style={{
+              position: 'fixed', bottom: 80, left: 12, right: 12,
+              background: '#0d1a2d', border: '0.5px solid #1e3a5f', borderRadius: 10, padding: '10px 12px',
+              zIndex: 100, animation: 'fadeUp 0.25s ease'
+            }}>
+              <div style={{ fontSize: 9, color: '#60a5fa', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 4, fontWeight: 500 }}>Fallacy detected</div>
+              <div style={{ fontSize: 12, fontWeight: 600, color: '#60a5fa', marginBottom: 2 }}>{toast}</div>
+              <div style={{ fontSize: 10, color: '#3d6090', lineHeight: 1.5 }}>Try backing your claim with evidence instead of this reasoning pattern.</div>
+            </div>
+          )}
         </div>
       </div>
 
