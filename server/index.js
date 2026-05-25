@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 const dotenv = require('dotenv');
 
 dotenv.config();
@@ -14,8 +15,12 @@ app.use(express.json());
 
 app.use('/api/debate', debateRoutes);
 
-app.get('/', (req, res) => {
-  res.json({ message: 'Argue With Me API running' });
+const distPath = path.join(__dirname, '../client/dist');
+app.use(express.static(distPath));
+
+app.get('*', (req, res) => {
+  if (req.path.startsWith('/api')) return;
+  res.sendFile(path.join(distPath, 'index.html'));
 });
 
 app.listen(PORT, () => {
